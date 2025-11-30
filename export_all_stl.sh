@@ -28,7 +28,7 @@ for scad_file in *.scad; do
 
         echo -e "${BLUE}[$count/$total]${NC} Экспорт: $scad_file → $stl_file"
 
-        # Запускаем OpenSCAD в командной строке для экспорта
+        # Запускаем OpenSCAD для экспорта (единицы: миллиметры)
         openscad -o "$stl_file" "$scad_file" 2>/dev/null
 
         if [ $? -eq 0 ]; then
