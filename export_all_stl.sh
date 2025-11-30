@@ -18,13 +18,14 @@ mkdir -p stl
 
 # Счётчик
 count=0
-total=$(ls *.scad 2>/dev/null | wc -l)
+total=$(ls scad/*.scad 2>/dev/null | grep -v common.scad | wc -l)
 
-# Экспортируем каждый .scad файл
-for scad_file in *.scad; do
-    if [ -f "$scad_file" ]; then
+# Экспортируем каждый .scad файл (кроме common.scad)
+for scad_file in scad/*.scad; do
+    if [ -f "$scad_file" ] && [[ ! "$scad_file" =~ common\.scad$ ]]; then
         count=$((count + 1))
-        stl_file="stl/${scad_file%.scad}.stl"
+        filename=$(basename "$scad_file" .scad)
+        stl_file="stl/${filename}.stl"
 
         echo -e "${BLUE}[$count/$total]${NC} Экспорт: $scad_file → $stl_file"
 
