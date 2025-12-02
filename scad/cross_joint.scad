@@ -1,7 +1,7 @@
 use <common.scad>
 
 center_size = 9;
-sleeve_reach = 60;
+sleeve_reach = 56.5;
 groove_width = 9;
 wall_height = 10;
 wall_thickness = 2;
