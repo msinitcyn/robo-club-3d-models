@@ -1,25 +1,17 @@
 use <common.scad>
 
-center_size = 9;
-sleeve_reach = 56.5;
-groove_width = 9;
-wall_height = 10;
-wall_thickness = 2;
-
-dowel_diameter = 5;
-dowel_depth = 4.5;
-
-total_width = groove_width + 2 * wall_thickness;
-sleeve_length = sleeve_reach - center_size/2;
+// Заглушка со штырями (1 выход)
+// Выход: право (0)
 
 union() {
-    difference() {
-        draw_base(center_size, total_width, wall_height, wall_thickness);
-        cut_wall_opening(0, center_size, groove_width, wall_height, wall_thickness);
-    }
-    attach_sleeve(0, sleeve_length, total_width, groove_width, wall_height, wall_thickness, center_size);
+    // Основание центра со штырем
+    draw_center_base(with_dowel = true);
 
-    add_dowel(0, 0, dowel_diameter, dowel_depth);
-    add_dowel(25, 0, dowel_diameter, dowel_depth);
-    add_dowel(50, 0, dowel_diameter, dowel_depth);
+    // Стенки центра на трех сторонах без выходов
+    place_center_wall(1);  // перед - закрыто
+    place_center_wall(2);  // лево - закрыто
+    place_center_wall(3);  // назад - закрыто
+
+    // Рукав на одной стороне (со штырем)
+    place_sleeve(0, with_dowel = true);  // право
 }
