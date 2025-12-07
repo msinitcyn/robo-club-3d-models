@@ -18,11 +18,11 @@ mkdir -p maze/stl
 
 # Счётчик
 count=0
-total=$(ls maze/scad/*.scad 2>/dev/null | grep -v common.scad | wc -l)
+total=$(ls maze/scad/*.scad 2>/dev/null | grep -v -E "(common|test)\.scad" | wc -l)
 
-# Экспортируем каждый .scad файл (кроме common.scad)
+# Экспортируем каждый .scad файл (кроме common.scad и тестовых)
 for scad_file in maze/scad/*.scad; do
-    if [ -f "$scad_file" ] && [[ ! "$scad_file" =~ common\.scad$ ]]; then
+    if [ -f "$scad_file" ] && [[ ! "$scad_file" =~ (common|test)\.scad$ ]]; then
         count=$((count + 1))
         filename=$(basename "$scad_file" .scad)
         stl_file="maze/stl/${filename}.stl"
