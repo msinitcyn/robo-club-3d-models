@@ -15,7 +15,7 @@ TOTAL_WIDTH = GROOVE_WIDTH + 2 * WALL_THICKNESS;  // полная ширина (
 SLEEVE_LENGTH = SLEEVE_REACH - CENTER_SIZE/2;     // длина рукава
 
 // Штыри
-DOWEL_DIAMETER = 4.8;      // диаметр штыря (чуть меньше 5мм отверстия)
+DOWEL_DIAMETER = 4.5;      // диаметр штыря (чуть меньше 5мм отверстия)
 DOWEL_DEPTH = 3;           // глубина штыря
 
 // Параметры для гибких стенок
