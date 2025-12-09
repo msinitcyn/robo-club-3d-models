@@ -1,0 +1,85 @@
+name: Build STL Files
+
+on:
+  push:
+    branches:
+      - main
+    tags:
+      - 'v*'
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Install OpenSCAD
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y openscad xvfb
+
+      - name: Build STL files
+        run: |
+          export DISPLAY=:99
+          Xvfb :99 -screen 0 1024x768x24 > /dev/null 2>&1 &
+          sleep 2
+          bash export_all_stl.sh
+
+      - name: Determine artifact path
+        id: artifact_path
+        run: |
+          if [[ $GITHUB_REF == refs/tags/* ]]; then
+            VERSION=${GITHUB_REF#refs/tags/}
+            echo "path=artifacts/${VERSION}" >> $GITHUB_OUTPUT
+            echo "version=${VERSION}" >> $GITHUB_OUTPUT
+            echo "is_tag=true" >> $GITHUB_OUTPUT
+          else
+            echo "path=artifacts/current" >> $GITHUB_OUTPUT
+            echo "version=current" >> $GITHUB_OUTPUT
+            echo "is_tag=false" >> $GITHUB_OUTPUT
+          fi
+
+      - name: Prepare artifacts directory
+        run: |
+          mkdir -p ${{ steps.artifact_path.outputs.path }}
+          cp -r maze/stl/* ${{ steps.artifact_path.outputs.path }}/
+
+      - name: Upload artifacts
+        uses: actions/upload-artifact@v4
+        with:
+          name: stl-files-${{ steps.artifact_path.outputs.version }}
+          path: ${{ steps.artifact_path.outputs.path }}/
+          retention-days: 90
+
+      - name: Create Release (for tags only)
+        if: steps.artifact_path.outputs.is_tag == 'true'
+        uses: softprops/action-gh-release@v1
+        with:
+          files: maze/stl/*.stl
+          generate_release_notes: true
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Commit artifacts to repository (for main branch)
+        if: steps.artifact_path.outputs.is_tag == 'false'
+        run: |
+          git config user.name "GitHub Actions Bot"
+          git config user.email "actions@github.com"
+
+          # Create artifacts directory structure
+          mkdir -p artifacts/current
+          cp -r maze/stl/* artifacts/current/
+
+          git add artifacts/current/
+
+          # Only commit if there are changes
+          if git diff --staged --quiet; then
+            echo "No changes to commit"
+          else
+            git commit -m "Update STL artifacts (current)"
+            git push origin main
+          fi
