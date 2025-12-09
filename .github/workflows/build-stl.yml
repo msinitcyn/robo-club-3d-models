@@ -48,6 +48,12 @@ jobs:
           mkdir -p ${{ steps.artifact_path.outputs.path }}
           cp -r maze/stl/* ${{ steps.artifact_path.outputs.path }}/
 
+          # For tagged releases, also copy to current
+          if [[ $GITHUB_REF == refs/tags/* ]]; then
+            mkdir -p artifacts/current
+            cp -r maze/stl/* artifacts/current/
+          fi
+
       - name: Upload artifacts
         uses: actions/upload-artifact@v4
         with:
@@ -64,22 +70,38 @@ jobs:
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
-      - name: Commit artifacts to repository (for main branch)
-        if: steps.artifact_path.outputs.is_tag == 'false'
+      - name: Commit artifacts to repository
         run: |
           git config user.name "GitHub Actions Bot"
           git config user.email "actions@github.com"
 
-          # Create artifacts directory structure
-          mkdir -p artifacts/current
-          cp -r maze/stl/* artifacts/current/
+          if [[ "${{ steps.artifact_path.outputs.is_tag }}" == "true" ]]; then
+            # For tagged releases: commit both version and current
+            VERSION=${{ steps.artifact_path.outputs.version }}
+            mkdir -p artifacts/${VERSION}
+            mkdir -p artifacts/current
+            cp -r maze/stl/* artifacts/${VERSION}/
+            cp -r maze/stl/* artifacts/current/
 
-          git add artifacts/current/
+            git add artifacts/${VERSION}/ artifacts/current/
 
-          # Only commit if there are changes
-          if git diff --staged --quiet; then
-            echo "No changes to commit"
+            if git diff --staged --quiet; then
+              echo "No changes to commit"
+            else
+              git commit -m "Add STL artifacts for ${VERSION}"
+              git push origin main
+            fi
           else
-            git commit -m "Update STL artifacts (current)"
-            git push origin main
+            # For main branch: only commit current
+            mkdir -p artifacts/current
+            cp -r maze/stl/* artifacts/current/
+
+            git add artifacts/current/
+
+            if git diff --staged --quiet; then
+              echo "No changes to commit"
+            else
+              git commit -m "Update STL artifacts (current)"
+              git push origin main
+            fi
           fi
