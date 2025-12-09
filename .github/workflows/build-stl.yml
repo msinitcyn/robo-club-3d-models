@@ -79,14 +79,19 @@ jobs:
             # For tagged releases: checkout main, commit both version and current
             VERSION=${{ steps.artifact_path.outputs.version }}
 
+            # Save STL files to temp location
+            mkdir -p /tmp/stl-backup
+            cp -r maze/stl/* /tmp/stl-backup/
+
             # Switch to main branch
             git fetch origin main
-            git checkout main
+            git checkout -f main
 
+            # Copy STL files to artifacts directories
             mkdir -p artifacts/${VERSION}
             mkdir -p artifacts/current
-            cp -r maze/stl/* artifacts/${VERSION}/
-            cp -r maze/stl/* artifacts/current/
+            cp -r /tmp/stl-backup/* artifacts/${VERSION}/
+            cp -r /tmp/stl-backup/* artifacts/current/
 
             git add artifacts/${VERSION}/ artifacts/current/
 
