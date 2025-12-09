@@ -1,5 +1,6 @@
-# Local STL builds (artifacts are managed by CI/CD)
+# Local STL builds and artifacts (managed by CI/CD)
 maze/stl/*.stl
+artifacts/
 
 # OpenSCAD cache
 *.echo
