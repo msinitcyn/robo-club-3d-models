@@ -76,8 +76,13 @@ jobs:
           git config user.email "actions@github.com"
 
           if [[ "${{ steps.artifact_path.outputs.is_tag }}" == "true" ]]; then
-            # For tagged releases: commit both version and current
+            # For tagged releases: checkout main, commit both version and current
             VERSION=${{ steps.artifact_path.outputs.version }}
+
+            # Switch to main branch
+            git fetch origin main
+            git checkout main
+
             mkdir -p artifacts/${VERSION}
             mkdir -p artifacts/current
             cp -r maze/stl/* artifacts/${VERSION}/
