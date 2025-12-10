@@ -1,121 +1,121 @@
-# 3D-модели для робоклуба
+# 3D Models for Robotics Club
 
 ![Build STL Files](https://github.com/msinitcyn/robo-club-3d-models/actions/workflows/build-stl.yml/badge.svg)
 
-## Проект: Лабиринт для робота
+## Project: Robot Maze
 
-### Описание системы
+### System Description
 
-Строим лабиринт для обучения робота навигации. Система состоит из:
+Building a maze for teaching robot navigation. The system consists of:
 
-**Основание:**
-- Отверстия диаметром 5мм
-- Шаг сетки: 12.5мм
-- Монтажные точки для установки соединителей стен
+**Base:**
+- Holes diameter: 5mm
+- Grid spacing: 12.5mm
+- Mounting points for wall connectors
 
-**Стены:**
-- Материал: фанера (9мм) или картон (2мм)
-- Форма: прямоугольники напиленные по размеру
-- Вставляются в пазы соединителей
-- Для картона используйте модели с суффиксом `_flexible`
+**Walls:**
+- Material: plywood (9mm) or cardboard (2mm)
+- Shape: rectangles cut to size
+- Insert into connector grooves
+- For cardboard use models with `_flexible` suffix
 
-**3D-печатные соединители:**
-- Высота: 10мм
-- Толщина стенок: 2мм
-- Ширина паза: 9мм (под фанеру)
-- Вылет до монтажного отверстия: 56.5мм (4.5 шага сетки)
+**3D-printed connectors:**
+- Height: 10mm
+- Wall thickness: 2mm
+- Groove width: 9mm (for plywood)
+- Reach to mounting hole: 56.5mm (4.5 grid steps)
 
-### Типы соединителей
+### Connector Types
 
-1. **end_cap** - заглушка (1 выход)
-2. **straight_joint** - прямой соединитель (2 выхода напротив)
-3. **corner_joint** - угловой (2 выхода под 90°)
-4. **t_joint** - T-образный (3 выхода)
-5. **cross_joint** - крестовина (4 выхода)
+1. **end_cap** - end cap (1 exit)
+2. **straight_joint** - straight connector (2 opposite exits)
+3. **corner_joint** - corner (2 exits at 90°)
+4. **t_joint** - T-shaped (3 exits)
+5. **cross_joint** - cross (4 exits)
 
-Каждый тип доступен в 4 вариантах:
-- Базовый (без штырей, для фанеры)
-- `_dowel` (со штырями для крепления в основание)
-- `_flexible` (гибкие стенки для картона, без штырей)
-- `_dowel_flexible` (гибкие стенки + штыри)
+Each type available in 4 variants:
+- Base (no dowels, for plywood)
+- `_dowel` (with dowels for base mounting)
+- `_flexible` (flexible walls for cardboard, no dowels)
+- `_dowel_flexible` (flexible walls + dowels)
 
-**Всего: 20 моделей**
+**Total: 20 models**
 
-### Структура проекта
+### Project Structure
 
 ```
 maze/
-  scad/           # OpenSCAD исходники
-    common.scad   # Общие модули и функции
-    *_joint*.scad # Различные типы соединителей
-  stl/            # Локально собранные STL (в .gitignore)
-artifacts/        # CI/CD артефакты (автоматически)
-  current/        # Последняя сборка из main ветки
-  v1.0/           # Сборки по версиям (для тегов)
+  scad/           # OpenSCAD source files
+    common.scad   # Common modules and functions
+    *_joint*.scad # Different connector types
+  stl/            # Locally built STL (in .gitignore)
+artifacts/        # CI/CD artifacts (automatic)
+  current/        # Latest build from main branch
+  v1.0/           # Version builds (for tags)
 .github/
-  workflows/      # GitHub Actions для автосборки
+  workflows/      # GitHub Actions for auto-build
 ```
 
-### Получение готовых STL файлов
+### Getting Ready STL Files
 
-**Вариант 1: Скачать с GitHub (рекомендуется)**
-- Последняя версия: `artifacts/current/` в репозитории
-- Стабильная версия: [Releases](../../releases) → скачать вложенные STL файлы
+**Option 1: Download from GitHub (recommended)**
+- Latest version: `artifacts/current/` in repository
+- Stable version: [Releases](../../releases) → download attached STL files
 
-**Вариант 2: Собрать локально**
+**Option 2: Build locally**
 ```bash
 ./export_all_stl.sh
 ```
-STL файлы появятся в `maze/stl/`
+STL files will appear in `maze/stl/`
 
-### Использование
+### Usage
 
-1. Скачать STL файлы из `artifacts/current/` или [Releases](../../releases)
-2. Печатать нужные соединители
-3. Подготовить стены из фанеры (9мм) или картона (2мм)
-4. Собирать лабиринт, вставляя стены в пазы соединителей
+1. Download STL files from `artifacts/current/` or [Releases](../../releases)
+2. Print needed connectors
+3. Prepare walls from plywood (9mm) or cardboard (2mm)
+4. Assemble maze by inserting walls into connector grooves
 
-### Разработка
+### Development
 
-1. Редактировать модели: `maze/scad/*.scad` файлы в OpenSCAD
-2. Тестировать локально: `./export_all_stl.sh`
-3. Коммитить изменения → GitHub Actions автоматически соберёт STL
-4. Для релиза: создать тег `git tag v1.1 && git push origin v1.1`
+1. Edit models: `maze/scad/*.scad` files in OpenSCAD
+2. Test locally: `./export_all_stl.sh`
+3. Commit changes → GitHub Actions automatically builds STL
+4. For release: create tag `git tag v1.1 && git push origin v1.1`
 
-### Параметры для модификации
+### Parameters for Modification
 
-В `common.scad` можно настроить:
+In `common.scad` you can configure:
 
-**Основные размеры:**
-- `CENTER_SIZE = 9` - размер центрального квадрата
-- `SLEEVE_REACH = 56.5` - расстояние до монтажного отверстия
-- `GROOVE_WIDTH = 9` - ширина паза (под фанеру)
-- `WALL_HEIGHT = 10` - высота стенок
-- `WALL_THICKNESS = 2` - толщина стенок
-- `BASE_THICKNESS = 2` - толщина основания
+**Main dimensions:**
+- `CENTER_SIZE = 9` - center square size
+- `SLEEVE_REACH = 56.5` - distance to mounting hole
+- `GROOVE_WIDTH = 9` - groove width (for plywood)
+- `WALL_HEIGHT = 10` - wall height
+- `WALL_THICKNESS = 2` - wall thickness
+- `BASE_THICKNESS = 2` - base thickness
 
-**Штыри:**
-- `DOWEL_DIAMETER = 4.5` - диаметр штыря
-- `DOWEL_DEPTH = 3` - глубина штыря
+**Dowels:**
+- `DOWEL_DIAMETER = 4.5` - dowel diameter
+- `DOWEL_DEPTH = 3` - dowel depth
 
-**Гибкие стенки (для картона):**
-- `CARDBOARD_THICKNESS = 2` - толщина картона
-- `FLEXIBLE_WALL_HEIGHT = 20` - высота гибких стенок (в 2 раза выше)
-- `CURVE_POWER = 2` - степень изгиба (2 = парабола)
-- `TILT_ANGLE_EXTRA = 5` - дополнительный угол наклона
+**Flexible walls (for cardboard):**
+- `CARDBOARD_THICKNESS = 2` - cardboard thickness
+- `FLEXIBLE_WALL_HEIGHT = 20` - flexible wall height (2x higher)
+- `CURVE_POWER = 2` - curve power (2 = parabola)
+- `TILT_ANGLE_EXTRA = 5` - additional tilt angle
 
 ### CI/CD Pipeline
 
-При пуше в GitHub автоматически запускается сборка STL:
+On push to GitHub, STL build is triggered automatically:
 
-**Для обычных коммитов (main ветка):**
-- Собираются все STL файлы
-- Коммитятся в `artifacts/current/`
-- Доступны как GitHub Artifacts (90 дней)
+**For regular commits (main branch):**
+- All STL files are built
+- Committed to `artifacts/current/`
+- Available as GitHub Artifacts (90 days)
 
-**Для тегов версий (v1.0, v1.1, и т.д.):**
-- Собираются все STL файлы
-- Создаётся GitHub Release с вложенными STL
-- Доступны как GitHub Artifacts с именем версии
+**For version tags (v1.0, v1.1, etc.):**
+- All STL files are built
+- GitHub Release is created with attached STL
+- Available as GitHub Artifacts with version name
 
-Это позволяет всегда иметь готовые к печати файлы без необходимости локальной установки OpenSCAD.
+This allows to always have print-ready files without need for local OpenSCAD installation.
