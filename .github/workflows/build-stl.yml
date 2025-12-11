@@ -4,6 +4,10 @@ on:
   push:
     branches:
       - main
+    paths:
+      - 'maze/scad/**/*.scad'
+      - 'export_all_stl.sh'
+      - '.github/workflows/build-stl.yml'
     tags:
       - 'v*'
 
