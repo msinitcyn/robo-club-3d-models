@@ -1,4 +1,4 @@
-use <common.scad>
+use <lego.scad>
 
 union() {
     draw_center_with_studs(with_dowel = true);

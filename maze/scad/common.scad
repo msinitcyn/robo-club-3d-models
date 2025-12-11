@@ -1,11 +1,11 @@
 CENTER_SIZE = 9;
-SLEEVE_REACH = 56.5;
+SLEEVE_LENGTH = 55;
+SLEEVE_REACH = SLEEVE_LENGTH + CENTER_SIZE/2;
 GROOVE_WIDTH = 9;
 WALL_HEIGHT = 10;
 WALL_THICKNESS = 2;
 BASE_THICKNESS = 2;
 TOTAL_WIDTH = GROOVE_WIDTH + 2 * WALL_THICKNESS;
-SLEEVE_LENGTH = SLEEVE_REACH - CENTER_SIZE/2;
 DOWEL_DIAMETER = 4.5;
 DOWEL_DEPTH = 3;
 CARDBOARD_THICKNESS = 2;
@@ -14,9 +14,6 @@ CURVE_POWER = 2;
 CURVE_POINTS = 20;
 TILT_ANGLE_EXTRA = 5;
 FLEXIBLE_WALL_HEIGHT = WALL_HEIGHT * 2;
-LEGO_STUD_DIAMETER = 4.8;
-LEGO_STUD_HEIGHT = 1.8;
-LEGO_UNIT = 8;
 
 LEFT = 3;
 RIGHT = 1;
@@ -44,13 +41,13 @@ module curved_wall_profile(side) {
     polygon(all_points);
 }
 
-module draw_regular_wall_base(width) {
-    translate([0, 0, BASE_THICKNESS])
-        cube([width, WALL_THICKNESS, WALL_HEIGHT - BASE_THICKNESS]);
+module draw_regular_wall_base(width, z_offset = BASE_THICKNESS) {
+    translate([0, 0, z_offset])
+        cube([width, WALL_THICKNESS, WALL_HEIGHT - z_offset]);
 }
 
-module draw_flexible_wall_base(width) {
-    tilt_angle = atan((GROOVE_WIDTH/2 - GROOVE_BOTTOM/2) / (FLEXIBLE_WALL_HEIGHT - BASE_THICKNESS)) + TILT_ANGLE_EXTRA;
+module draw_flexible_wall_base(width, z_offset = BASE_THICKNESS) {
+    tilt_angle = atan((GROOVE_WIDTH/2 - GROOVE_BOTTOM/2) / (FLEXIBLE_WALL_HEIGHT - z_offset)) + TILT_ANGLE_EXTRA;
     translate([0, -WALL_THICKNESS/2, 0])
         rotate([tilt_angle + 6, 0, 0])
             rotate([90, 0, 90])
@@ -108,12 +105,12 @@ module position_center_wall(side) {
     }
 }
 
-module place_center_wall(side, wall_type = "regular") {
+module place_center_wall(side, wall_type = "regular", z_offset = BASE_THICKNESS) {
     position_center_wall(side) {
         if (wall_type == "regular") {
-            draw_regular_wall_base(TOTAL_WIDTH);
+            draw_regular_wall_base(TOTAL_WIDTH, z_offset);
         } else {
-            draw_flexible_wall_base(TOTAL_WIDTH);
+            draw_flexible_wall_base(TOTAL_WIDTH, z_offset);
         }
     }
 }
@@ -149,93 +146,44 @@ module position_sleeve_wall(side) {
     }
 }
 
-module draw_sleeve_wall(side, wall_type = "regular") {
+module draw_sleeve_wall(side, wall_type = "regular", z_offset = BASE_THICKNESS) {
     position_sleeve_wall(side) {
         if (wall_type == "regular") {
-            draw_regular_wall_base(SLEEVE_LENGTH);
+            draw_regular_wall_base(SLEEVE_LENGTH, z_offset);
         } else {
-            draw_flexible_wall_base(SLEEVE_LENGTH);
+            draw_flexible_wall_base(SLEEVE_LENGTH, z_offset);
         }
     }
 }
 
-module draw_full_sleeve(with_dowel = false, wall_type = "regular") {
+module draw_full_sleeve(with_dowel = false, wall_type = "regular", z_offset = BASE_THICKNESS) {
     union() {
         draw_sleeve_base(with_dowel);
-        draw_sleeve_wall(LEFT, wall_type);
-        draw_sleeve_wall(RIGHT, wall_type);
+        draw_sleeve_wall(LEFT, wall_type, z_offset);
+        draw_sleeve_wall(RIGHT, wall_type, z_offset);
     }
 }
 
-module place_sleeve(side, with_dowel = false, wall_type = "regular") {
+module place_sleeve(side, with_dowel = false, wall_type = "regular", z_offset = BASE_THICKNESS) {
     if (side == 0) {
         translate([CENTER_SIZE/2, 0, 0])
-            draw_full_sleeve(with_dowel, wall_type);
+            draw_full_sleeve(with_dowel, wall_type, z_offset);
     } else if (side == 1) {
         rotate([0, 0, 90])
             translate([CENTER_SIZE/2, 0, 0])
-                draw_full_sleeve(with_dowel, wall_type);
+                draw_full_sleeve(with_dowel, wall_type, z_offset);
     } else if (side == 2) {
         rotate([0, 0, 180])
             translate([CENTER_SIZE/2, 0, 0])
-                draw_full_sleeve(with_dowel, wall_type);
+                draw_full_sleeve(with_dowel, wall_type, z_offset);
     } else if (side == 3) {
         rotate([0, 0, 270])
             translate([CENTER_SIZE/2, 0, 0])
-                draw_full_sleeve(with_dowel, wall_type);
+                draw_full_sleeve(with_dowel, wall_type, z_offset);
     }
 }
 
 module add_dowel(x, y, dowel_diameter, dowel_depth) {
     translate([x, y, -dowel_depth])
         cylinder(h=dowel_depth, d=dowel_diameter, $fn=30);
-}
-
-module draw_lego_stud() {
-    cylinder(h=LEGO_STUD_HEIGHT, d=LEGO_STUD_DIAMETER, $fn=30);
-}
-
-module draw_center_with_studs(with_dowel = false) {
-    union() {
-        draw_center_base(with_dowel);
-        translate([0, 0, BASE_THICKNESS])
-            draw_lego_stud();
-    }
-}
-
-module draw_sleeve_with_studs(with_dowel = false) {
-    first_stud_candidate = LEGO_UNIT - (CENTER_SIZE/2 % LEGO_UNIT);
-    first_stud = first_stud_candidate < LEGO_STUD_DIAMETER/2
-                 ? first_stud_candidate + LEGO_UNIT
-                 : first_stud_candidate;
-
-    max_stud_position = SLEEVE_LENGTH - LEGO_STUD_DIAMETER/2;
-    num_studs = floor((max_stud_position - first_stud) / LEGO_UNIT) + 1;
-
-    union() {
-        draw_sleeve_base(with_dowel);
-        for (i = [0:num_studs-1]) {
-            translate([first_stud + i * LEGO_UNIT, 0, BASE_THICKNESS])
-                draw_lego_stud();
-        }
-    }
-}
-
-module place_sleeve_with_studs(side, with_dowel = false) {
-    if (side == 0) {
-        translate([CENTER_SIZE/2, 0, 0])
-            draw_sleeve_with_studs(with_dowel);
-    } else if (side == 1) {
-        rotate([0, 0, 90])
-            translate([CENTER_SIZE/2, 0, 0])
-                draw_sleeve_with_studs(with_dowel);
-    } else if (side == 2) {
-        rotate([0, 0, 180])
-            translate([CENTER_SIZE/2, 0, 0])
-                draw_sleeve_with_studs(with_dowel);
-    } else if (side == 3) {
-        rotate([0, 0, 270])
-            translate([CENTER_SIZE/2, 0, 0])
-                draw_sleeve_with_studs(with_dowel);
-    }
 }
