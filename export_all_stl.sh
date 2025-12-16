@@ -16,6 +16,13 @@ cd "$DIR"
 # Создаём папку для STL файлов
 mkdir -p maze/stl
 
+# Очищаем artifacts/current перед генерацией
+if [ -d "artifacts/current" ]; then
+    echo -e "${BLUE}Очистка artifacts/current/${NC}"
+    rm -f artifacts/current/*.stl
+    echo ""
+fi
+
 # Счётчик
 count=0
 total=$(ls maze/scad/*.scad 2>/dev/null | grep -v -E "(common|test)\.scad" | wc -l)
