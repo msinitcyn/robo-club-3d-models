@@ -6,9 +6,6 @@ LEGO_STUD_DIAMETER = 4.8;
 LEGO_STUD_HEIGHT = 1.8;
 LEGO_UNIT = 8;
 LEGO_HOLE_DIAMETER = 5.0;
-LEGO_TUBE_OUTER_DIAMETER = 6.5;
-LEGO_TUBE_INNER_DIAMETER = 5.0;
-LEGO_TUBE_HEIGHT = LEGO_STUD_HEIGHT - 0.2;
 LEGO_NICHE_DEPTH = 2.2;
 LEGO_NICHE_ROOF = 1.0;
 LEGO_NICHE_BASE_THICKNESS = LEGO_NICHE_DEPTH + LEGO_NICHE_ROOF;
@@ -89,32 +86,6 @@ module draw_sleeve_base_with_simple_holes() {
     }
 }
 
-module draw_sleeve_base_with_tubes() {
-    first_stud_candidate = LEGO_UNIT - (CENTER_SIZE/2 % LEGO_UNIT);
-    first_stud = first_stud_candidate < LEGO_STUD_DIAMETER/2
-                 ? first_stud_candidate + LEGO_UNIT
-                 : first_stud_candidate;
-
-    max_stud_position = SLEEVE_LENGTH - LEGO_STUD_DIAMETER/2;
-    num_studs = floor((max_stud_position - first_stud) / LEGO_UNIT) + 1;
-
-    difference() {
-        union() {
-            translate([0, -TOTAL_WIDTH/2, 0])
-                cube([SLEEVE_LENGTH, TOTAL_WIDTH, LEGO_STUD_HEIGHT]);
-
-            for (i = [0:num_studs-1]) {
-                translate([first_stud + i * LEGO_UNIT, 0, 0])
-                    cylinder(h=LEGO_TUBE_HEIGHT, d=LEGO_TUBE_OUTER_DIAMETER, $fn=30);
-            }
-        }
-
-        for (i = [0:num_studs-1]) {
-            translate([first_stud + i * LEGO_UNIT, 0, -0.05])
-                cylinder(h=LEGO_STUD_HEIGHT + 0.1, d=LEGO_TUBE_INNER_DIAMETER, $fn=30);
-        }
-    }
-}
 
 module draw_sleeve_base_with_niche() {
     first_stud_candidate = LEGO_UNIT - (CENTER_SIZE/2 % LEGO_UNIT);
@@ -170,21 +141,6 @@ module draw_sleeve_with_simple_holes_flexible() {
     }
 }
 
-module draw_sleeve_with_tubes() {
-    union() {
-        draw_sleeve_base_with_tubes();
-        draw_sleeve_wall(LEFT, "regular", LEGO_STUD_HEIGHT);
-        draw_sleeve_wall(RIGHT, "regular", LEGO_STUD_HEIGHT);
-    }
-}
-
-module draw_sleeve_with_tubes_flexible() {
-    union() {
-        draw_sleeve_base_with_tubes();
-        draw_sleeve_wall(LEFT, "flexible", LEGO_STUD_HEIGHT);
-        draw_sleeve_wall(RIGHT, "flexible", LEGO_STUD_HEIGHT);
-    }
-}
 
 module draw_sleeve_with_niche() {
     union() {
