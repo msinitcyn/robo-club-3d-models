@@ -4,7 +4,7 @@ LEGO_STUD_DIAMETER = 4.8;
 LEGO_STUD_HEIGHT = 1.8;
 LEGO_UNIT = 8;
 LEGO_HOLE_DIAMETER = 5.0;
-LEGO_NICHE_DEPTH = 2.2;
+LEGO_NICHE_DEPTH = 2.0;
 LEGO_NICHE_ROOF = 1.0;
 LEGO_NICHE_BASE_THICKNESS = LEGO_NICHE_DEPTH + LEGO_NICHE_ROOF;
 LEGO_INTER_CYLINDER_DIAMETER = LEGO_UNIT - LEGO_STUD_DIAMETER - 0.2;
@@ -94,8 +94,8 @@ module draw_sleeve_base_with_niche() {
     max_stud_position = SLEEVE_LENGTH - LEGO_STUD_DIAMETER/2;
     num_studs = floor((max_stud_position - first_stud) / LEGO_UNIT) + 1;
 
-    niche_x_start = first_stud - LEGO_STUD_DIAMETER/2;
-    niche_x_end = first_stud + (num_studs - 1) * LEGO_UNIT + LEGO_STUD_DIAMETER/2;
+    niche_x_start = first_stud - LEGO_HOLE_DIAMETER/2;
+    niche_x_end = first_stud + (num_studs - 1) * LEGO_UNIT + LEGO_HOLE_DIAMETER/2;
     niche_length = niche_x_end - niche_x_start;
 
     union() {
