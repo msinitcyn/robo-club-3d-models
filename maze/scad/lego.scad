@@ -1,5 +1,7 @@
 include <common.scad>
 
+VERSION = "1.0";
+
 LEGO_STUD_DIAMETER = 4.8;
 LEGO_STUD_HEIGHT = 1.8;
 LEGO_UNIT = 8;
@@ -7,6 +9,12 @@ LEGO_HOLE_DIAMETER = 5.0;
 LEGO_TUBE_OUTER_DIAMETER = 6.5;
 LEGO_TUBE_INNER_DIAMETER = 5.0;
 LEGO_TUBE_HEIGHT = LEGO_STUD_HEIGHT - 0.2;
+LEGO_NICHE_DEPTH = 2.2;
+LEGO_NICHE_ROOF = 1.0;
+LEGO_NICHE_BASE_THICKNESS = LEGO_NICHE_DEPTH + LEGO_NICHE_ROOF;
+LEGO_INTER_CYLINDER_DIAMETER = LEGO_UNIT - LEGO_STUD_DIAMETER - 0.2;
+LEGO_INTER_CYLINDER_HOLE_DIAMETER = 1.5;
+LEGO_NICHE_WIDTH = LEGO_HOLE_DIAMETER;
 
 module draw_lego_stud() {
     cylinder(h=LEGO_STUD_HEIGHT, d=LEGO_STUD_DIAMETER, $fn=30);
@@ -108,6 +116,44 @@ module draw_sleeve_base_with_tubes() {
     }
 }
 
+module draw_sleeve_base_with_niche() {
+    first_stud_candidate = LEGO_UNIT - (CENTER_SIZE/2 % LEGO_UNIT);
+    first_stud = first_stud_candidate < LEGO_STUD_DIAMETER/2
+                 ? first_stud_candidate + LEGO_UNIT
+                 : first_stud_candidate;
+
+    max_stud_position = SLEEVE_LENGTH - LEGO_STUD_DIAMETER/2;
+    num_studs = floor((max_stud_position - first_stud) / LEGO_UNIT) + 1;
+
+    niche_x_start = first_stud - LEGO_STUD_DIAMETER/2;
+    niche_x_end = first_stud + (num_studs - 1) * LEGO_UNIT + LEGO_STUD_DIAMETER/2;
+    niche_length = niche_x_end - niche_x_start;
+
+    union() {
+        difference() {
+            translate([0, -TOTAL_WIDTH/2, 0])
+                cube([SLEEVE_LENGTH, TOTAL_WIDTH, LEGO_NICHE_BASE_THICKNESS]);
+
+            translate([niche_x_start, -LEGO_NICHE_WIDTH/2, 0])
+                cube([niche_length, LEGO_NICHE_WIDTH, LEGO_NICHE_DEPTH + 0.1]);
+
+            for (i = [0:num_studs-1]) {
+                translate([first_stud + i * LEGO_UNIT, 0, -0.05])
+                    cylinder(h=LEGO_NICHE_DEPTH + 0.1, d=LEGO_HOLE_DIAMETER, $fn=30);
+            }
+        }
+
+        for (i = [0:num_studs-2]) {
+            translate([first_stud + i * LEGO_UNIT + LEGO_UNIT/2, 0, LEGO_NICHE_DEPTH / 3])
+                difference() {
+                    cylinder(h=LEGO_NICHE_DEPTH * 2/3, d=LEGO_INTER_CYLINDER_DIAMETER, $fn=30);
+                    translate([0, 0, -0.05])
+                        cylinder(h=LEGO_NICHE_DEPTH * 2/3 + 0.1, d=LEGO_INTER_CYLINDER_HOLE_DIAMETER, $fn=30);
+                }
+        }
+    }
+}
+
 module draw_sleeve_with_simple_holes() {
     union() {
         draw_sleeve_base_with_simple_holes();
@@ -138,4 +184,30 @@ module draw_sleeve_with_tubes_flexible() {
         draw_sleeve_wall(LEFT, "flexible", LEGO_STUD_HEIGHT);
         draw_sleeve_wall(RIGHT, "flexible", LEGO_STUD_HEIGHT);
     }
+}
+
+module draw_sleeve_with_niche() {
+    union() {
+        draw_sleeve_base_with_niche();
+        draw_sleeve_wall(LEFT, "regular", LEGO_NICHE_BASE_THICKNESS);
+        draw_sleeve_wall(RIGHT, "regular", LEGO_NICHE_BASE_THICKNESS);
+    }
+}
+
+module draw_sleeve_with_niche_flexible() {
+    union() {
+        draw_sleeve_base_with_niche();
+        draw_sleeve_wall(LEFT, "flexible", LEGO_NICHE_BASE_THICKNESS);
+        draw_sleeve_wall(RIGHT, "flexible", LEGO_NICHE_BASE_THICKNESS);
+    }
+}
+
+module engrave_version(text, size=2.5, depth=0.3) {
+    linear_extrude(height=depth)
+        text(text, size=size, font="Liberation Sans:style=Bold", halign="center", valign="center");
+}
+
+module add_version_stamp(x, y, z) {
+    translate([x, y, z - 0.29])
+        engrave_version(VERSION);
 }

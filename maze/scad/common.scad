@@ -18,18 +18,17 @@ FLEXIBLE_WALL_HEIGHT = WALL_HEIGHT * 2;
 LEFT = 3;
 RIGHT = 1;
 
-function wall_curve(z) =
-    GROOVE_BOTTOM/2 + (GROOVE_WIDTH/2 - GROOVE_BOTTOM/2) * pow(z/(FLEXIBLE_WALL_HEIGHT - BASE_THICKNESS), CURVE_POWER);
+function wall_curve(z, wall_height) =
+    GROOVE_BOTTOM/2 + (GROOVE_WIDTH/2 - GROOVE_BOTTOM/2) * pow(z/wall_height, CURVE_POWER);
 
-module curved_wall_profile(side) {
-    wall_h = FLEXIBLE_WALL_HEIGHT - BASE_THICKNESS;
+module curved_wall_profile(side, wall_height) {
     points_inner = [for (i = [0:CURVE_POINTS])
-        [wall_curve(i * wall_h / CURVE_POINTS) * side,
-         i * wall_h / CURVE_POINTS]
+        [wall_curve(i * wall_height / CURVE_POINTS, wall_height) * side,
+         i * wall_height / CURVE_POINTS]
     ];
     points_outer = [for (i = [0:CURVE_POINTS])
-        [(wall_curve(i * wall_h / CURVE_POINTS) + WALL_THICKNESS) * side,
-         i * wall_h / CURVE_POINTS]
+        [(wall_curve(i * wall_height / CURVE_POINTS, wall_height) + WALL_THICKNESS) * side,
+         i * wall_height / CURVE_POINTS]
     ];
     all_points = concat(
         [[points_inner[0][0], 0]],
@@ -43,16 +42,17 @@ module curved_wall_profile(side) {
 
 module draw_regular_wall_base(width, z_offset = BASE_THICKNESS) {
     translate([0, 0, z_offset])
-        cube([width, WALL_THICKNESS, WALL_HEIGHT - z_offset]);
+        cube([width, WALL_THICKNESS, WALL_HEIGHT]);
 }
 
 module draw_flexible_wall_base(width, z_offset = BASE_THICKNESS) {
-    tilt_angle = atan((GROOVE_WIDTH/2 - GROOVE_BOTTOM/2) / (FLEXIBLE_WALL_HEIGHT - z_offset)) + TILT_ANGLE_EXTRA;
-    translate([0, -WALL_THICKNESS/2, 0])
+    wall_height = FLEXIBLE_WALL_HEIGHT - z_offset;
+    tilt_angle = atan((GROOVE_WIDTH/2 - GROOVE_BOTTOM/2) / wall_height) + TILT_ANGLE_EXTRA;
+    translate([0, -WALL_THICKNESS/2, z_offset - 2])
         rotate([tilt_angle + 6, 0, 0])
             rotate([90, 0, 90])
                 linear_extrude(height = width)
-                    curved_wall_profile(1);
+                    curved_wall_profile(1, wall_height);
 }
 
 module draw_center_base(with_dowel = false) {
