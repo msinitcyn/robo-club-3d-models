@@ -1,4 +1,5 @@
 include <lego.scad>
+use <version.scad>
 
 difference() {
     union() {
@@ -9,5 +10,5 @@ difference() {
         place_sleeve_with_studs(3, with_dowel = false);
     }
 
-    add_version_stamp(0, 0, BASE_THICKNESS);
+    print_version();
 }

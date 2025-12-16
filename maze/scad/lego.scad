@@ -1,7 +1,5 @@
 include <common.scad>
 
-VERSION = "1.0";
-
 LEGO_STUD_DIAMETER = 4.8;
 LEGO_STUD_HEIGHT = 1.8;
 LEGO_UNIT = 8;
@@ -158,12 +156,3 @@ module draw_sleeve_with_niche_flexible() {
     }
 }
 
-module engrave_version(text, size=2.5, depth=0.3) {
-    linear_extrude(height=depth)
-        text(text, size=size, font="Liberation Sans:style=Bold", halign="center", valign="center");
-}
-
-module add_version_stamp(x, y, z) {
-    translate([x, y, z - 0.29])
-        engrave_version(VERSION);
-}

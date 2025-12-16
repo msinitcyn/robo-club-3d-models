@@ -1,3 +1,7 @@
 use <lego.scad>
+use <version.scad>
 
-draw_sleeve_with_simple_holes_flexible();
+difference() {
+    draw_sleeve_with_simple_holes_flexible();
+    print_version_sleeve();
+}
