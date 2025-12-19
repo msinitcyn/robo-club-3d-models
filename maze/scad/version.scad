@@ -1,4 +1,4 @@
-VERSION = "v1.2.4";
+VERSION = "v1.2.5";
 
 module engrave_version_text(text, size=2.0, depth=0.3) {
     linear_extrude(height=depth)

@@ -28,12 +28,7 @@ Based on print testing feedback, the following improvements are planned for vers
   - Change: `DOWEL_DEPTH` from 3.0mm to 3.5mm
   - Reason: Dowels too short for secure mounting to base
 
-- [ ] **5. Reduce groove width for plywood**
-  - File: `maze/scad/common.scad`
-  - Change: `GROOVE_WIDTH` from 9.0mm to 8.5mm
-  - Reason: Groove too wide for 9mm plywood (walls are loose)
-
-- [ ] **6. Create double-sided LEGO base series**
+- [x] **5. Create double-sided LEGO base series**
   - New files: 8 new .scad files
   - Feature: LEGO bases with studs on both top and bottom surfaces
   - Models:

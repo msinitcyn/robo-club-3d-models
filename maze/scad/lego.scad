@@ -148,3 +148,68 @@ module draw_sleeve_with_niche_flexible() {
     }
 }
 
+DOUBLE_BASE_THICKNESS = BASE_THICKNESS + LEGO_STUD_HEIGHT;
+
+module draw_center_with_studs_double() {
+    union() {
+        difference() {
+            translate([0, 0, LEGO_STUD_HEIGHT])
+                draw_center_base(false);
+            translate([0, 0, -0.05])
+                cylinder(h=LEGO_STUD_HEIGHT + 0.1, d=LEGO_STUD_DIAMETER, $fn=30);
+        }
+        translate([0, 0, LEGO_STUD_HEIGHT + BASE_THICKNESS])
+            draw_lego_stud();
+        translate([0, 0, LEGO_STUD_HEIGHT])
+            rotate([180, 0, 0])
+                draw_lego_stud();
+    }
+}
+
+module draw_sleeve_with_studs_double() {
+    first_stud_candidate = LEGO_UNIT - (CENTER_SIZE/2 % LEGO_UNIT);
+    first_stud = first_stud_candidate < LEGO_STUD_DIAMETER/2
+                 ? first_stud_candidate + LEGO_UNIT
+                 : first_stud_candidate;
+
+    max_stud_position = SLEEVE_LENGTH - LEGO_STUD_DIAMETER/2;
+    num_studs = floor((max_stud_position - first_stud) / LEGO_UNIT) + 1;
+
+    union() {
+        difference() {
+            translate([0, 0, LEGO_STUD_HEIGHT])
+                draw_sleeve_base(false);
+            for (i = [0:num_studs-1]) {
+                translate([first_stud + i * LEGO_UNIT, 0, -0.05])
+                    cylinder(h=LEGO_STUD_HEIGHT + 0.1, d=LEGO_STUD_DIAMETER, $fn=30);
+            }
+        }
+        for (i = [0:num_studs-1]) {
+            translate([first_stud + i * LEGO_UNIT, 0, LEGO_STUD_HEIGHT + BASE_THICKNESS])
+                draw_lego_stud();
+            translate([first_stud + i * LEGO_UNIT, 0, LEGO_STUD_HEIGHT])
+                rotate([180, 0, 0])
+                    draw_lego_stud();
+        }
+    }
+}
+
+module place_sleeve_with_studs_double(side) {
+    if (side == 0) {
+        translate([CENTER_SIZE/2, 0, 0])
+            draw_sleeve_with_studs_double();
+    } else if (side == 1) {
+        rotate([0, 0, 90])
+            translate([CENTER_SIZE/2, 0, 0])
+                draw_sleeve_with_studs_double();
+    } else if (side == 2) {
+        rotate([0, 0, 180])
+            translate([CENTER_SIZE/2, 0, 0])
+                draw_sleeve_with_studs_double();
+    } else if (side == 3) {
+        rotate([0, 0, 270])
+            translate([CENTER_SIZE/2, 0, 0])
+                draw_sleeve_with_studs_double();
+    }
+}
+
