@@ -4,19 +4,19 @@ Based on print testing feedback, the following improvements are planned for vers
 
 ## Changes Checklist
 
-- [ ] **1. Increase LEGO stud diameter**
+- [x] **1. Increase LEGO stud diameter**
   - File: `maze/scad/lego.scad`
   - Change: `LEGO_STUD_DIAMETER` from 4.8mm to 5.0mm
   - Reason: Current studs don't hold parts or authentic LEGO bricks securely
 
-- [ ] **2. Move version stamp to top surface and increase size**
+- [x] **2. Move version stamp to top surface and increase size**
   - File: `maze/scad/version.scad`
   - Changes:
     - Move version engraving from bottom (z=0) to top surfaces
     - Increase font size from 1.0mm to 2.0mm
   - Reason: Bottom surface has support material and version is not visible
 
-- [ ] **3. Fix LEGO niche design**
+- [x] **3. Fix LEGO niche design**
   - File: `maze/scad/lego.scad`
   - Changes:
     - Reduce `LEGO_NICHE_WIDTH` from 5.0mm to 4.8mm

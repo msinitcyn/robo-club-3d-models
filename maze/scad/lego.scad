@@ -4,12 +4,11 @@ LEGO_STUD_DIAMETER = 5.0;
 LEGO_STUD_HEIGHT = 1.8;
 LEGO_UNIT = 8;
 LEGO_HOLE_DIAMETER = 5.0;
-LEGO_NICHE_DEPTH = 2.0;
-LEGO_NICHE_ROOF = 1.0;
-LEGO_NICHE_BASE_THICKNESS = LEGO_NICHE_DEPTH + LEGO_NICHE_ROOF;
-LEGO_INTER_CYLINDER_DIAMETER = LEGO_UNIT - LEGO_STUD_DIAMETER - 0.2;
-LEGO_INTER_CYLINDER_HOLE_DIAMETER = 1.5;
-LEGO_NICHE_WIDTH = LEGO_HOLE_DIAMETER;
+LEGO_NICHE_DEPTH = 1.8;
+LEGO_NICHE_BASE_THICKNESS = LEGO_NICHE_DEPTH;
+LEGO_NICHE_WIDTH = 4.8;
+LEGO_NICHE_WALL_THICKNESS = 1.2;
+LEGO_INTER_CYLINDER_DIAMETER = LEGO_UNIT - LEGO_STUD_DIAMETER;
 
 module draw_lego_stud() {
     cylinder(h=LEGO_STUD_HEIGHT, d=LEGO_STUD_DIAMETER, $fn=30);
@@ -94,8 +93,8 @@ module draw_sleeve_base_with_niche() {
     max_stud_position = SLEEVE_LENGTH - LEGO_STUD_DIAMETER/2;
     num_studs = floor((max_stud_position - first_stud) / LEGO_UNIT) + 1;
 
-    niche_x_start = first_stud - LEGO_HOLE_DIAMETER/2;
-    niche_x_end = first_stud + (num_studs - 1) * LEGO_UNIT + LEGO_HOLE_DIAMETER/2;
+    niche_x_start = first_stud - LEGO_HOLE_DIAMETER/2 + 0.1;
+    niche_x_end = first_stud + (num_studs - 1) * LEGO_UNIT + LEGO_HOLE_DIAMETER/2 - 0.1;
     niche_length = niche_x_end - niche_x_start;
 
     union() {
@@ -105,20 +104,13 @@ module draw_sleeve_base_with_niche() {
 
             translate([niche_x_start, -LEGO_NICHE_WIDTH/2, 0])
                 cube([niche_length, LEGO_NICHE_WIDTH, LEGO_NICHE_DEPTH + 0.1]);
-
-            for (i = [0:num_studs-1]) {
-                translate([first_stud + i * LEGO_UNIT, 0, -0.05])
-                    cylinder(h=LEGO_NICHE_DEPTH + 0.1, d=LEGO_HOLE_DIAMETER, $fn=30);
-            }
         }
 
         for (i = [0:num_studs-2]) {
-            translate([first_stud + i * LEGO_UNIT + LEGO_UNIT/2, 0, LEGO_NICHE_DEPTH / 3])
-                difference() {
-                    cylinder(h=LEGO_NICHE_DEPTH * 2/3, d=LEGO_INTER_CYLINDER_DIAMETER, $fn=30);
-                    translate([0, 0, -0.05])
-                        cylinder(h=LEGO_NICHE_DEPTH * 2/3 + 0.1, d=LEGO_INTER_CYLINDER_HOLE_DIAMETER, $fn=30);
-                }
+            translate([first_stud + i * LEGO_UNIT + LEGO_UNIT/2, 0, 0])
+                cylinder(h=LEGO_NICHE_DEPTH, d=LEGO_INTER_CYLINDER_DIAMETER, $fn=30);
+            translate([first_stud + i * LEGO_UNIT + LEGO_UNIT/2 - LEGO_NICHE_WALL_THICKNESS/2, -LEGO_NICHE_WIDTH/2, 0])
+                cube([LEGO_NICHE_WALL_THICKNESS, LEGO_NICHE_WIDTH, LEGO_NICHE_DEPTH]);
         }
     }
 }
