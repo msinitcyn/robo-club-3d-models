@@ -23,7 +23,7 @@ Based on print testing feedback, the following improvements are planned for vers
     - Replace cylindrical supports between studs with perpendicular walls
   - Reason: Cylinders break when removing support material; niche too wide (LEGO bricks are loose)
 
-- [ ] **4. Increase dowel depth**
+- [x] **4. Increase dowel depth**
   - File: `maze/scad/common.scad`
   - Change: `DOWEL_DEPTH` from 3.0mm to 3.5mm
   - Reason: Dowels too short for secure mounting to base
