@@ -55,17 +55,6 @@ module draw_flexible_wall_base(width, z_offset = BASE_THICKNESS) {
                     curved_wall_profile(1, wall_height);
 }
 
-module draw_center_base(with_dowel = false) {
-    union() {
-        translate([-TOTAL_WIDTH/2, -TOTAL_WIDTH/2, 0])
-            cube([TOTAL_WIDTH, TOTAL_WIDTH, BASE_THICKNESS]);
-        if (with_dowel) {
-            translate([0, 0, -DOWEL_DEPTH])
-                cylinder(h=DOWEL_DEPTH, d=DOWEL_DIAMETER, $fn=30);
-        }
-    }
-}
-
 module orient_wall(side) {
     if (side == 0) {
         rotate([0, 0, 270])
@@ -81,56 +70,103 @@ module orient_wall(side) {
     }
 }
 
-module translate_center_wall(side) {
+module translate_center_wall(side, center_size, base_width) {
     if (side == 0) {
-        translate([CENTER_SIZE/2, TOTAL_WIDTH/2, 0])
+        translate([center_size/2, base_width/2, 0])
             children();
     } else if (side == 1) {
-        translate([-TOTAL_WIDTH/2, CENTER_SIZE/2, 0])
+        translate([-base_width/2, center_size/2, 0])
             children();
     } else if (side == 2) {
-        translate([-CENTER_SIZE/2, -TOTAL_WIDTH/2, 0])
+        translate([-center_size/2, -base_width/2, 0])
             children();
     } else if (side == 3) {
-        translate([TOTAL_WIDTH/2, -CENTER_SIZE/2, 0])
+        translate([base_width/2, -center_size/2, 0])
             children();
     }
 }
 
-module position_center_wall(side) {
-    translate_center_wall(side) {
-        orient_wall(side) {
-            children();
+module place_sleeve_dowels(length, base_width = CENTER_SIZE) {
+    offset = base_width / 2;
+    first_pos = 25 - offset;
+
+    for (i = [0:10]) {
+        pos = first_pos + i * 25;
+        if (pos + DOWEL_DIAMETER/2 <= length) {
+            translate([pos, 0, -DOWEL_DEPTH])
+                cylinder(h=DOWEL_DEPTH, d=DOWEL_DIAMETER, $fn=30);
         }
     }
 }
 
-module place_center_wall(side, wall_type = "regular", z_offset = BASE_THICKNESS) {
-    position_center_wall(side) {
-        if (wall_type == "regular") {
-            draw_regular_wall_base(TOTAL_WIDTH, z_offset);
-        } else {
-            draw_flexible_wall_base(TOTAL_WIDTH, z_offset);
-        }
-    }
-}
-
-module draw_sleeve_base(with_dowel = false) {
+module place_center_base(size = TOTAL_WIDTH, height = BASE_THICKNESS) {
     union() {
-        translate([0, -TOTAL_WIDTH/2, 0])
-            cube([SLEEVE_LENGTH, TOTAL_WIDTH, BASE_THICKNESS]);
-        if (with_dowel) {
-            translate([25 - CENTER_SIZE/2, 0, -DOWEL_DEPTH])
-                cylinder(h=DOWEL_DEPTH, d=DOWEL_DIAMETER, $fn=30);
-            translate([50 - CENTER_SIZE/2, 0, -DOWEL_DEPTH])
-                cylinder(h=DOWEL_DEPTH, d=DOWEL_DIAMETER, $fn=30);
+        translate([-size/2, -size/2, 0])
+            cube([size, size, height]);
+    }
+}
+
+module place_center_wall(side, center_width = TOTAL_WIDTH, z_offset = BASE_THICKNESS, wall_type = "regular") {
+    translate_center_wall(side, center_width - 2*WALL_THICKNESS, center_width) {
+        orient_wall(side) {
+            if (wall_type == "regular") {
+                draw_regular_wall_base(center_width, z_offset);
+            } else {
+                draw_flexible_wall_base(center_width, z_offset);
+            }
         }
     }
 }
 
-module translate_sleeve_wall(side) {
+module place_center_dowel(dowel_diameter = DOWEL_DIAMETER, dowel_depth = DOWEL_DEPTH) {
+    translate([0, 0, -dowel_depth])
+        cylinder(h=dowel_depth, d=dowel_diameter, $fn=30);
+}
+
+module place_sleeve_base(length, width, height = BASE_THICKNESS) {
+    translate([0, -width/2, 0])
+        cube([length, width, height]);
+}
+
+module place_sleeve_walls(length, wall_type = "regular", z_offset = BASE_THICKNESS) {
+    position_sleeve_wall(LEFT, length) {
+        if (wall_type == "regular") {
+            draw_regular_wall_base(length, z_offset);
+        } else {
+            draw_flexible_wall_base(length, z_offset);
+        }
+    }
+    position_sleeve_wall(RIGHT, length) {
+        if (wall_type == "regular") {
+            draw_regular_wall_base(length, z_offset);
+        } else {
+            draw_flexible_wall_base(length, z_offset);
+        }
+    }
+}
+
+module orient_sleeve(side, center_size = CENTER_SIZE) {
+    if (side == 0) {
+        translate([center_size/2, 0, 0])
+            children();
+    } else if (side == 1) {
+        rotate([0, 0, 90])
+            translate([center_size/2, 0, 0])
+                children();
+    } else if (side == 2) {
+        rotate([0, 0, 180])
+            translate([center_size/2, 0, 0])
+                children();
+    } else if (side == 3) {
+        rotate([0, 0, 270])
+            translate([center_size/2, 0, 0])
+                children();
+    }
+}
+
+module translate_sleeve_wall(side, length) {
     if (side == LEFT) {
-        translate([SLEEVE_LENGTH, -TOTAL_WIDTH/2 + WALL_THICKNESS, 0])
+        translate([length, -TOTAL_WIDTH/2 + WALL_THICKNESS, 0])
             children();
     } else if (side == RIGHT) {
         translate([0, TOTAL_WIDTH/2 - WALL_THICKNESS, 0])
@@ -138,52 +174,10 @@ module translate_sleeve_wall(side) {
     }
 }
 
-module position_sleeve_wall(side) {
-    translate_sleeve_wall(side) {
+module position_sleeve_wall(side, length) {
+    translate_sleeve_wall(side, length) {
         orient_wall(side) {
             children();
         }
     }
-}
-
-module draw_sleeve_wall(side, wall_type = "regular", z_offset = BASE_THICKNESS) {
-    position_sleeve_wall(side) {
-        if (wall_type == "regular") {
-            draw_regular_wall_base(SLEEVE_LENGTH, z_offset);
-        } else {
-            draw_flexible_wall_base(SLEEVE_LENGTH, z_offset);
-        }
-    }
-}
-
-module draw_full_sleeve(with_dowel = false, wall_type = "regular", z_offset = BASE_THICKNESS) {
-    union() {
-        draw_sleeve_base(with_dowel);
-        draw_sleeve_wall(LEFT, wall_type, z_offset);
-        draw_sleeve_wall(RIGHT, wall_type, z_offset);
-    }
-}
-
-module place_sleeve(side, with_dowel = false, wall_type = "regular", z_offset = BASE_THICKNESS) {
-    if (side == 0) {
-        translate([CENTER_SIZE/2, 0, 0])
-            draw_full_sleeve(with_dowel, wall_type, z_offset);
-    } else if (side == 1) {
-        rotate([0, 0, 90])
-            translate([CENTER_SIZE/2, 0, 0])
-                draw_full_sleeve(with_dowel, wall_type, z_offset);
-    } else if (side == 2) {
-        rotate([0, 0, 180])
-            translate([CENTER_SIZE/2, 0, 0])
-                draw_full_sleeve(with_dowel, wall_type, z_offset);
-    } else if (side == 3) {
-        rotate([0, 0, 270])
-            translate([CENTER_SIZE/2, 0, 0])
-                draw_full_sleeve(with_dowel, wall_type, z_offset);
-    }
-}
-
-module add_dowel(x, y, dowel_diameter, dowel_depth) {
-    translate([x, y, -dowel_depth])
-        cylinder(h=dowel_depth, d=dowel_diameter, $fn=30);
 }

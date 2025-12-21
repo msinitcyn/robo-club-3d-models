@@ -1,13 +1,36 @@
-use <lego.scad>
+include <lego.scad>
 use <version.scad>
 
 difference() {
     union() {
-        draw_center_with_studs(with_dowel = true);
-        place_sleeve_with_studs(0, with_dowel = true);
-        place_sleeve_with_studs(1, with_dowel = true);
-        place_sleeve_with_studs(2, with_dowel = true);
+        place_center_base(LEGO_TOTAL_WIDTH);
+        place_center_lego_stud();
+        place_center_dowel();
+
+        orient_sleeve(0, LEGO_BASE_CENTER_SIZE) {
+            union() {
+                place_sleeve_base(LEGO_SLEEVE_LENGTH, LEGO_TOTAL_WIDTH);
+                place_sleeve_lego_studs(LEGO_SLEEVE_LENGTH);
+                place_sleeve_dowels(LEGO_SLEEVE_LENGTH, LEGO_TOTAL_WIDTH);
+            }
+        }
+
+        orient_sleeve(1, LEGO_BASE_CENTER_SIZE) {
+            union() {
+                place_sleeve_base(LEGO_SLEEVE_LENGTH, LEGO_TOTAL_WIDTH);
+                place_sleeve_lego_studs(LEGO_SLEEVE_LENGTH);
+                place_sleeve_dowels(LEGO_SLEEVE_LENGTH, LEGO_TOTAL_WIDTH);
+            }
+        }
+
+        orient_sleeve(2, LEGO_BASE_CENTER_SIZE) {
+            union() {
+                place_sleeve_base(LEGO_SLEEVE_LENGTH, LEGO_TOTAL_WIDTH);
+                place_sleeve_lego_studs(LEGO_SLEEVE_LENGTH);
+                place_sleeve_dowels(LEGO_SLEEVE_LENGTH, LEGO_TOTAL_WIDTH);
+            }
+        }
     }
 
-    print_version();
+    print_version(top_z=3.8);
 }

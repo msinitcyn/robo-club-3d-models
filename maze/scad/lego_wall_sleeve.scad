@@ -1,7 +1,12 @@
-use <lego.scad>
+include <lego.scad>
 use <version.scad>
 
 difference() {
-    draw_sleeve_with_simple_holes();
+    union() {
+        place_sleeve_base(LEGO_SLEEVE_LENGTH, TOTAL_WIDTH, LEGO_STUD_HEIGHT);
+        place_sleeve_walls(LEGO_SLEEVE_LENGTH, "regular", LEGO_STUD_HEIGHT);
+    }
+
+    place_sleeve_lego_holes(LEGO_SLEEVE_LENGTH);
     print_version_sleeve();
 }

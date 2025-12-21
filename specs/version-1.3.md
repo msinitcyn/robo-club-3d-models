@@ -4,7 +4,7 @@ Improvements to make parts better compatible with standard LEGO dimensions
 
 ## Changes Checklist
 
-- [ ] **1. Adjust LEGO base dimensions to match standard LEGO parts**
+- [x] **1. Adjust LEGO base dimensions to match standard LEGO parts**
   - Files: All `lego_base_*.scad` files (including `_double` variants)
   - Changes in `maze/scad/lego.scad`:
     - Add new constants for LEGO-compatible dimensions

@@ -1,13 +1,31 @@
-use <common.scad>
+include <common.scad>
 use <version.scad>
 
 difference() {
     union() {
-        draw_center_base(with_dowel = false);
-        place_center_wall(3, "flexible");
-        place_sleeve(0, with_dowel = false, wall_type = "flexible");
-        place_sleeve(1, with_dowel = false, wall_type = "flexible");
-        place_sleeve(2, with_dowel = false, wall_type = "flexible");
+        place_center_base();
+        place_center_wall(3, wall_type = "flexible");
+
+        orient_sleeve(0) {
+            union() {
+                place_sleeve_base(SLEEVE_LENGTH, TOTAL_WIDTH);
+                place_sleeve_walls(SLEEVE_LENGTH, "flexible");
+            }
+        }
+
+        orient_sleeve(1) {
+            union() {
+                place_sleeve_base(SLEEVE_LENGTH, TOTAL_WIDTH);
+                place_sleeve_walls(SLEEVE_LENGTH, "flexible");
+            }
+        }
+
+        orient_sleeve(2) {
+            union() {
+                place_sleeve_base(SLEEVE_LENGTH, TOTAL_WIDTH);
+                place_sleeve_walls(SLEEVE_LENGTH, "flexible");
+            }
+        }
     }
 
     print_version();
